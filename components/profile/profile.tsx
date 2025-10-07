@@ -135,7 +135,7 @@ export default function Profile({ userId }: Props) {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-third p-4 rounded-xl items-center justify-center mt-8"
+                    className="bg-third p-4 rounded-xl items-center justify-center mt-8 mb-12"
                     onPress={() => {
                         setEditUser(data);
                         setEditModalVisible(true);

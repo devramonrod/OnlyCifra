@@ -1,4 +1,5 @@
 export class ColorUtils {
+
     static DEFAULT: string = '#dad6d696';
     static SELECTED: string = '#fa010196';
     static PRIMARY: string = '#111827';
@@ -9,4 +10,5 @@ export class ColorUtils {
     static TONES: string = '#ebb811';
     static STRUCT: string = '#6d6d0693';
     static SUB_TITLE: string = '#60a5fa'
-}
+    static BACKGROUND: string = '#000000ff';
+} 

@@ -3,13 +3,15 @@ import { Chord } from "@/libs/domain/Chord/Chord";
 import { IErrors } from "@/libs/domain/Interfaces/IError";
 import { IStruct } from "@/libs/domain/Interfaces/IStruct";
 import { Tones } from "@/libs/enuns/Tones";
+import { ColorUtils } from "@/libs/utils/ColorUtils";
 import { StringUtils } from "@/libs/utils/StringUtils";
 import { sanitize, validateSongForm } from "@/libs/utils/validate";
 import { createChord, deleteChord, findByChordId, updateChord } from "@/service/ChordService";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { TextInput } from "react-native-paper";
 import ConfirmationModal from "../confirmationModal/confirmationModal";
 import CustomButton from "../customButton/customButton";
@@ -140,98 +142,119 @@ export default function ChordDetails({ id }: Props) {
     }, [id]);
 
     return (
-        <View className="p-4 gap-2 bg-primary">
-            <View className="flex-row justify-between items-center">
-                <Text className="text-[2rem] text-title mb-3">
-                    {title}
-                </Text>
-                {id && (<CustomButton handle={() => setModalVisible(true)} />)}
-            </View>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1, backgroundColor: ColorUtils.BACKGROUND }}
+            keyboardVerticalOffset={80}
+        >
+            <ScrollView>
+                <View className="p-4 gap-2 bg-primary">
+                    <View className="flex-row justify-between items-center">
+                        <Text className="text-[2rem] text-title mb-3">
+                            {title}
+                        </Text>
+                        {id && (<CustomButton handle={() => setModalVisible(true)} />)}
+                    </View>
 
-            <TextInput
-                placeholder="Título"
-                mode="outlined"
-                className="mb-2"
-                contentStyle={{ fontSize: 22 }}
-                value={form?.title}
-                onChangeText={(it) => handleChange('title', it)}
-                error={!!errors.title}
-            />
-
-            <SelectModal
-                label="Tom"
-                value={form.tone}
-                options={toneList}
-                onChange={(val) => handleChange("tone", val)}
-            />
-
-            <TextInput
-                placeholder="Cantor"
-                mode="outlined"
-                className="mb-2"
-                contentStyle={{ fontSize: 22 }}
-                value={form?.singer}
-                onChangeText={(it) => handleChange('singer', it)}
-                error={!!errors.singer}
-            />
-
-            {struct.map((it, index) => (
-                <View key={index} className="mt-1 bg-struct rounded relative">
-                    {struct.length
-                        > 1 && (
-                            <TouchableOpacity
-                                onPress={() => removeSection(index)}
-                                className="absolute -top-4 -right-2 rounded-full justify-center items-center shadow-2xl z-20"
-                            >
-                                <Ionicons size={size} name="close-circle-outline" color={'#f7831eff'} />
-                            </TouchableOpacity>
-                        )}
                     <TextInput
-                        placeholder="Estrutura"
+                        placeholder="Nome da Música"
                         mode="outlined"
                         className="mb-2"
                         contentStyle={{ fontSize: 22 }}
-                        value={it?.section}
-                        onChangeText={(text) => handleStructChange(index, 'section', text)}
-                        error={!!errors[`struct_section_${index}`]}
+                        value={form?.title}
+                        onChangeText={(it) => handleChange('title', it)}
+                        error={!!errors.title}
                     />
+
                     <TextInput
-                        placeholder="Cifra"
+                        placeholder="Artista"
+                        mode="outlined"
+                        className="mb-2"
+                        contentStyle={{ fontSize: 22 }}
+                        value={form?.singer}
+                        onChangeText={(it) => handleChange('singer', it)}
+                        error={!!errors.singer}
+                    />
+
+                    <SelectModal
+                        label="Tom"
+                        value={form.tone}
+                        options={toneList}
+                        onChange={(val) => handleChange("tone", val)}
+                    />
+
+                    <TextInput
+                        placeholder="Descrição"
                         mode="outlined"
                         multiline
-                        numberOfLines={5}
+                        numberOfLines={2}
                         textAlignVertical="top"
                         className="mb-6 min-h-[100]"
                         contentStyle={{ fontSize: 22 }}
-                        value={it?.content.join(' ').replaceAll(' P ', '\n')}
-                        onChangeText={(it) => handleStructChange(index, 'content', it)}
-                        error={!!errors[`struct_content_${index}`]}
+                        value={form?.description}
+                        onChangeText={(it) => handleChange('description', it)}
                     />
 
-                </View>
+                    {struct.map((it, index) => (
+                        <View key={index} className="mt-1 bg-struct rounded relative">
+                            {struct.length
+                                > 1 && (
+                                    <TouchableOpacity
+                                        onPress={() => removeSection(index)}
+                                        className="absolute -top-4 -right-2 rounded-full justify-center items-center shadow-2xl z-20"
+                                    >
+                                        <Ionicons size={size} name="close-circle-outline" color={'#f7831eff'} />
+                                    </TouchableOpacity>
+                                )}
+                            <TextInput
+                                placeholder="Estrutura"
+                                mode="outlined"
+                                className="mb-2"
+                                contentStyle={{ fontSize: 22 }}
+                                value={it?.section}
+                                onChangeText={(text) => handleStructChange(index, 'section', text)}
+                                error={!!errors[`struct_section_${index}`]}
+                            />
+                            <TextInput
+                                placeholder="Cifra"
+                                mode="outlined"
+                                multiline
+                                numberOfLines={5}
+                                textAlignVertical="top"
+                                className="mb-6 min-h-[100]"
+                                contentStyle={{ fontSize: 22 }}
+                                value={it?.content.join(' ').replaceAll(' P ', '\n')}
+                                onChangeText={(it) => handleStructChange(index, 'content', it)}
+                                error={!!errors[`struct_content_${index}`]}
+                            />
 
-            ))}
-            <ConfirmationModal
-                visible={modalVisible}
-                title="Confirmação"
-                message="Tem certeza que deseja deletar esta música?"
-                onCancel={() => setModalVisible(false)}
-                onConfirm={handleDelete}
-            />
-            <View className="flex-row justify-start mt-2">
-                <TouchableOpacity
-                    onPress={addStruct}
-                >
-                    <Text className="text-white font-bold">Mais</Text>
-                </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-                onPress={handleSubmit}
-                className="bg-tone w-full h-16 mt-[3rem] rounded-lg justify-center items-center shadow-md">
-                <Text className="text-title font-bold text-3xl">
-                    Salvar
-                </Text>
-            </TouchableOpacity>
-        </View>
+                        </View>
+
+                    ))}
+                    <ConfirmationModal
+                        visible={modalVisible}
+                        title="Confirmação"
+                        message="Tem certeza que deseja deletar esta música?"
+                        onCancel={() => setModalVisible(false)}
+                        onConfirm={handleDelete}
+                    />
+                    <View className="flex-row justify-start mt-2">
+                        <TouchableOpacity
+                            onPress={addStruct}
+                        >
+                            <Text className="text-white font-bold">Mais</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity
+                        onPress={handleSubmit}
+                        className="bg-tone w-full h-16 mt-[3rem] mb-[4rem] rounded-lg justify-center items-center shadow-md">
+                        <Text className="text-title font-bold text-3xl">
+                            Salvar
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
+
     )
 }

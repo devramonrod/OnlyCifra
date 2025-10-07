@@ -63,7 +63,7 @@ export default function DashboardScreen() {
                     title="Cadastrar Musica"
                     subtitle="Nova Cifra"
                     icon="add-circle-outline"
-                    onPress={() => router.push("./(menu)/chordDetails")}
+                    onPress={() => router.push("./(menu)/chordDetailsScreen")}
                 />
 
                 <DashboardButton

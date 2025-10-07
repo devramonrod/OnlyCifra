@@ -15,6 +15,7 @@ export async function createChord(entity: Partial<Chord>) {
             struct: entity.struct,
             userId: user.uid,
             likesCount: 0,
+            description: entity?.description,
             isActive: entity.isActive,
             createdAt: entity.createdAt,
         });

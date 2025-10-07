@@ -18,6 +18,7 @@ export class Chord {
         public userId: string = StringUtils.EMPTY,
         public struct: IStruct[] = [],
         public likesCount: number = 0,
+        public description: string = StringUtils.EMPTY,
         public isActive: boolean = true,
         public createdAt: string = new Date().toISOString(),
     ) { }
@@ -31,6 +32,7 @@ export class Chord {
             json.userId,
             json.struct,
             json.likesCount,
+            json.description,
             json.isActive,
             json.createdAt
         );
@@ -45,6 +47,7 @@ export class Chord {
             userId: this.userId,
             struct: this.struct,
             likesCount: this.likesCount,
+            description: this.description,
             isActive: this.isActive,
             createdAt: this.createdAt,
         };

@@ -13,6 +13,7 @@ import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 
 export default function RootLayout() {
@@ -54,35 +55,37 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DarkTheme}>
-            <AuthProvider>
-                <CredentialsProvider>
-                    <PermissionProvider>
-                        <PaperProvider theme={theme}>
-                            <Stack>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DarkTheme}>
+                <AuthProvider>
+                    <CredentialsProvider>
+                        <PermissionProvider>
+                            <PaperProvider theme={theme}>
+                                <Stack>
 
-                                <Stack.Screen name="(auth)/index" options={{ headerShown: false }} />
-                                <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
-                                <Stack.Screen name="(auth)/forgotPassWord" options={{ headerShown: false }} />
+                                    <Stack.Screen name="(auth)/index" options={{ headerShown: false }} />
+                                    <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
+                                    <Stack.Screen name="(auth)/forgotPassWord" options={{ headerShown: false }} />
 
-                                <Stack.Screen name="(menu)/chordDetails" options={{ title: 'Cadastrar Cifra' }} />
-                                <Stack.Screen name="(menu)/groupScreen" options={{ title: 'Grupo' }} />
-                                <Stack.Screen name="(menu)/tutorialScreen" options={{ title: 'Tutorial' }} />
-                                <Stack.Screen name="(menu)/userProfileScreen" options={{ title: 'Perfil' }} />
-                                <Stack.Screen name="userProfile/[id]" options={{ title: 'Perfil' }} />
+                                    <Stack.Screen name="(menu)/chordDetailsScreen" options={{ title: 'Cadastrar Cifra' }} />
+                                    <Stack.Screen name="(menu)/groupScreen" options={{ title: 'Grupo' }} />
+                                    <Stack.Screen name="(menu)/tutorialScreen" options={{ title: 'Tutorial' }} />
+                                    <Stack.Screen name="(menu)/userProfileScreen" options={{ title: 'Perfil' }} />
+                                    <Stack.Screen name="userProfile/[id]" options={{ title: 'Perfil' }} />
 
 
-                                <Stack.Screen name="(tabs)" options={getDynamicTabOptions} />
-                                <Stack.Screen name="chord/[id]" options={{ title: 'Cifra' }} />
-                                <Stack.Screen name="editChord/[id]" options={{ title: 'Editar Cifra' }} />
-                                <Stack.Screen name="favoriteList/[id]" options={{ title: 'Play' }} />
-                                <Stack.Screen name="chordFavorites/[id]" options={{ title: 'Cifra' }} />
-                            </Stack>
-                            <StatusBar style="dark" />
-                        </PaperProvider>
-                    </PermissionProvider>
-                </CredentialsProvider>
-            </AuthProvider>
-        </ThemeProvider>
+                                    <Stack.Screen name="(tabs)" options={getDynamicTabOptions} />
+                                    <Stack.Screen name="chord/[id]" options={{ title: 'Cifra' }} />
+                                    <Stack.Screen name="editChord/[id]" options={{ title: 'Editar Cifra' }} />
+                                    <Stack.Screen name="favoriteList/[id]" options={{ title: 'Play' }} />
+                                    <Stack.Screen name="chordFavorites/[id]" options={{ title: 'Cifra' }} />
+                                </Stack>
+                                <StatusBar style="dark" />
+                            </PaperProvider>
+                        </PermissionProvider>
+                    </CredentialsProvider>
+                </AuthProvider>
+            </ThemeProvider>
+        </GestureHandlerRootView >
     );
 }

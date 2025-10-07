@@ -8,7 +8,7 @@ import { checkUserLiked, toggleLikeChord } from '@/service/ChordService';
 import { findUserById, updateUserLikes } from '@/service/UserService';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import CustomButton from '../customButton/customButton';
 import Loading from '../loading/loadgin';
 
@@ -20,7 +20,9 @@ export default function ChordData({ chord }: Props) {
 
     const router = useRouter();
     const [selectedTone, setSelectedTone] = useState<Tones | string>(chord?.tone || StringUtils.EMPTY);
-    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [modalToneVisible, setModalToneVisible] = useState<boolean>(false);
+    const [modalDescriptionVisible, setModalDescriptionVisible] = useState<boolean>(false);
+
     const [producer, setProducer] = useState<User>();
     const [liked, setLiked] = useState<boolean>(false);
     const [likesCount, setLikesCount] = useState<number>(chord?.likesCount ?? 0);
@@ -93,115 +95,162 @@ export default function ChordData({ chord }: Props) {
     }, [chord]);
 
     return (
-        <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1, backgroundColor: ColorUtils.BACKGROUND }}
+            keyboardVerticalOffset={80}
         >
-            {!processedStruct && <Loading visible={true} />}
+            <ScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+            >
+                {!processedStruct && <Loading visible={true} />}
 
-            {chord && (
-                <View className='flex-1 justify-between'>
-                    <View>
-                        <View className="flex-row justify-start items-center">
-                            <Text className='text-[2rem] text-title font-bold text-center flex-1'>
-                                {chord.title}
-                            </Text>
-                            <CustomButton handle={() => editChord(chord.id)} color={ColorUtils.DEFAULT} icon='note-edit' />
+                {chord && (
+                    <View className='flex-1 justify-between'>
+                        <View>
+                            <View className="flex-row justify-start items-center">
+                                <Text className='text-[2rem] text-title font-bold text-center flex-1'>
+                                    {chord.title}
+                                </Text>
+                                <CustomButton handle={() => editChord(chord.id)} color={ColorUtils.DEFAULT} icon='note-edit' />
+                            </View>
+
+                            <View className='p-4'>
+                                <View className='flex-1 flex-row justify-between items-start mb-4'>
+                                    <View className="flex-col items-start">
+                                        <Text className='text-name text-[1.5rem] mt-3'>{chord.singer}</Text>
+
+                                        <TouchableOpacity onPress={() => setModalToneVisible(true)}>
+                                            <Text className='text-[1.5rem] font-semibold text-tone mt-[-3]'>{selectedTone}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View className="flex-col items-center">
+                                        <CustomButton
+                                            handle={handleLike}
+                                            color={liked ? 'red' : ColorUtils.DEFAULT}
+                                            icon={liked ? 'heart' : 'heart-outline'}
+                                        />
+                                        <Text className="text-title font-bold p-0 mt-[-6px]">
+                                            {likesCount} {isLikes}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <View>
+                                    {processedStruct.map((it, index) => (
+                                        <View key={index} className='flex-col mb-6'>
+                                            <Text className='text-[1.8rem] text-name'>{it?.section}</Text>
+                                            <View className='flex-row flex-wrap'>
+                                                {it.content.map((c: any, idx: any) => (
+                                                    c.isBreak ? (
+                                                        <View key={idx} className="w-full h-0" />
+                                                    ) : (
+                                                        <Text key={idx} className='text-[1.8rem] text-notes font-semibold'>
+                                                            {c.value}{' '}
+                                                        </Text>
+                                                    )
+                                                ))}
+                                            </View>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View >
                         </View>
+                        {chord.description && (
+                            <TouchableOpacity
+                                className="p-4"
+                                onPress={() => {
+                                    setModalDescriptionVisible(true);
+                                }}
+                            >
+                                <Text className="text-title mt-6 text-start">
+                                    Descrições.
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                        <TouchableOpacity
+                            className="p-4 mb-10"
+                            onPress={() => router.push(`../userProfile/${producer?.id}`)}
+                        >
+                            <Text className="text-title mt-6 text-start">
+                                By: {producer?.name}
+                            </Text>
+                        </TouchableOpacity>
+                        <Modal
+                            visible={modalToneVisible}
+                            transparent
+                            animationType="slide"
+                            onRequestClose={() => setModalToneVisible(false)}
+                        >
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                onPress={() => setModalToneVisible(false)}
+                                className="flex-1 bg-black/40"
+                            />
 
-                        <View className='p-4'>
-                            <View className='flex-1 flex-row justify-between items-start mb-4'>
-                                <View className="flex-col items-start">
-                                    <Text className='text-name text-[1.5rem] mt-3'>{chord.singer}</Text>
-
-                                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                        <Text className='text-[1.5rem] font-semibold text-tone mt-[-3]'>{selectedTone}</Text>
+                            <View className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6">
+                                <View className="flex-row justify-between items-center mb-4">
+                                    <Text className="text-lg font-bold text-gray-800">Tom</Text>
+                                    <TouchableOpacity onPress={() => setModalToneVisible(false)}>
+                                        <Text className="text-2xl text-gray-500">×</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <View className="flex-col items-center">
-                                    <CustomButton
-                                        handle={handleLike}
-                                        color={liked ? 'red' : ColorUtils.DEFAULT}
-                                        icon={liked ? 'heart' : 'heart-outline'}
-                                    />
-                                    <Text className="text-title font-bold p-0 mt-[-6px]">
-                                        {likesCount} {isLikes}
-                                    </Text>
-                                </View>
-                            </View>
 
-                            <View>
-                                {processedStruct.map((it, index) => (
-                                    <View key={index} className='flex-col mb-6'>
-                                        <Text className='text-[1.8rem] text-name'>{it?.section}</Text>
-                                        <View className='flex-row flex-wrap'>
-                                            {it.content.map((c: any, idx: any) => (
-                                                c.isBreak ? (
-                                                    <View key={idx} className="w-full h-0" />
-                                                ) : (
-                                                    <Text key={idx} className='text-[1.8rem] text-notes font-semibold'>
-                                                        {c.value}{' '}
-                                                    </Text>
-                                                )
-                                            ))}
-                                        </View>
-                                    </View>
-                                ))}
-                            </View>
-                        </View >
-                    </View>
-                    <TouchableOpacity className="p-4 mb-6" onPress={() => router.push(`../userProfile/${producer?.id}`)}>
-                        <Text className="text-title mt-6 text-start">
-                            By: {producer?.name}
-                        </Text>
-                    </TouchableOpacity>
-                    <Modal
-                        visible={modalVisible}
-                        transparent
-                        animationType="slide"
-                        onRequestClose={() => setModalVisible(false)}
-                    >
-                        <TouchableOpacity
-                            activeOpacity={1}
-                            onPress={() => setModalVisible(false)}
-                            className="flex-1 bg-black/40"
-                        />
+                                <View className="flex-row flex-wrap justify-center">
+                                    {Object.values(Tones).map((tone) => {
+                                        const isSelected = selectedTone === tone;
 
-                        <View className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6">
-                            <View className="flex-row justify-between items-center mb-4">
-                                <Text className="text-lg font-bold text-gray-800">Tom</Text>
-                                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                    <Text className="text-2xl text-gray-500">×</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View className="flex-row flex-wrap justify-center">
-                                {Object.values(Tones).map((tone) => {
-                                    const isSelected = selectedTone === tone;
-
-                                    return (
-                                        <TouchableOpacity
-                                            key={tone}
-                                            onPress={() => {
-                                                setSelectedTone(tone);
-                                                setModalVisible(false);
-                                            }}
-                                            className={`m-2 w-20 h-20 rounded-full items-center justify-center ${isSelected ? 'bg-tone' : 'bg-gray-200'
-                                                }`}
-                                        >
-                                            <Text
-                                                className={`text-base font-semibold ${isSelected ? 'text-white' : 'text-gray-800'
+                                        return (
+                                            <TouchableOpacity
+                                                key={tone}
+                                                onPress={() => {
+                                                    setSelectedTone(tone);
+                                                    setModalToneVisible(false);
+                                                }}
+                                                className={`m-2 w-20 h-20 rounded-full items-center justify-center ${isSelected ? 'bg-tone' : 'bg-gray-200'
                                                     }`}
                                             >
-                                                {tone}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
+                                                <Text
+                                                    className={`text-base font-semibold ${isSelected ? 'text-white' : 'text-gray-800'
+                                                        }`}
+                                                >
+                                                    {tone}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
+                                </View>
                             </View>
-                        </View>
-                    </Modal>
-                </View>
-            )}
-        </ScrollView>
+                        </Modal>
+
+                        <Modal
+                            visible={modalDescriptionVisible}
+                            transparent
+                            animationType="slide"
+                            onRequestClose={() => setModalDescriptionVisible(false)}
+                        >
+                            <TouchableOpacity
+                                activeOpacity={1}
+                                onPress={() => setModalDescriptionVisible(false)}
+                                className="flex-1 bg-black/40"
+                            />
+
+                            <View className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6">
+                                <View className="flex-row justify-between items-center mb-4">
+                                    <Text className="text-lg font-bold text-gray-800">Descrição</Text>
+                                    <TouchableOpacity onPress={() => setModalDescriptionVisible(false)}>
+                                        <Text className="text-2xl text-gray-500">×</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View className="flex-row flex-wrap justify-start">
+                                    <Text className='text-lg text-gray-800'>{chord.description}</Text>
+                                </View>
+                            </View>
+                        </Modal>
+                    </View>
+                )}
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }

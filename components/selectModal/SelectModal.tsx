@@ -40,10 +40,6 @@ export default function SelectModal({
     return (
         <View>
             <View className="flex-row justify-start mt-2">
-                <TouchableOpacity
-                >
-                    <Text className="text-white font-bold">Mais</Text>
-                </TouchableOpacity>
             </View>
             <TouchableOpacity
                 activeOpacity={0.8}
