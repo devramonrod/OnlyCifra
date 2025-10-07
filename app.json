@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "onlyCifraApp",
+    "name": "GsusPlay",
     "slug": "my-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "onlyCifraApp",
+    "scheme": "GsusPlay",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -13,14 +13,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.ramonrodsouza.onlyCifraApp"
+      "package": "com.ramonrodsouza.GsusPlay"
     },
     "web": {
       "output": "static",
@@ -40,17 +37,18 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "owner": "ramonrodsouza",
+    "owner": "ramonrod",
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "8e2db9b6-3156-4ed9-9b18-dec36e728deb"
+        "projectId": "7e94e730-bd1e-498a-b3bd-2959d9079bc8"
       }
     }
   }

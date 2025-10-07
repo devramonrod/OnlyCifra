@@ -34,17 +34,17 @@ export default function PlaylistRadiusModal({ visible, onClose, playList, onSubm
             >
                 <TouchableOpacity
                     activeOpacity={1}
-                    className="bg-white rounded-lg p-6 w-11/12 max-h-[80%]"
+                    className="bg-bgSecondary rounded-lg p-6 w-11/12 max-h-[80%]"
                 >
-                    <Text className="text-xl font-bold mb-4">Escolha as Playlists</Text>
-                    <ScrollView className="mb-4">
+                    <Text className="text-3xl font-bold text-secondary">Escolha as Playlists</Text>
+                    <ScrollView className="mb-2">
                         {playList.map((it) => (
                             <TouchableOpacity
                                 key={it.id}
                                 onPress={() => toggleSelection(it.id)}
-                                className="flex-row items-center justify-between px-4 py-3 mb-2 rounded-lg bg-gray-100"
+                                className="flex-row items-center justify-between rounded-lg bg-gray-800 text-secondary p-4 rounded-xl mt-4 text-lg"
                             >
-                                <Text className="text-base">{it.name}</Text>
+                                <Text className="text-secondary">{it.name}</Text>
                                 <View className="w-6 h-6 mr-4 rounded-full border border-gray-500 flex items-center justify-center">
                                     {selectedIds.includes(it.id) && (
                                         <View className="w-3 h-3 rounded-full bg-blue-500" />
@@ -59,9 +59,9 @@ export default function PlaylistRadiusModal({ visible, onClose, playList, onSubm
                             onSubmit(selectedIds);
                             onClose();
                         }}
-                        className="bg-blue-500 py-3 rounded-lg items-center"
+                        className="bg-third p-4 rounded-xl items-center justify-center mt-4"
                     >
-                        <Text className="text-white font-bold">Adicionar Música</Text>
+                        <Text className="text-secondary font-bold text-lg">Adicionar/Remover</Text>
                     </TouchableOpacity>
                 </TouchableOpacity>
             </TouchableOpacity>

@@ -149,11 +149,11 @@ export default function ChordData({ chord }: Props) {
                             </View>
                         </View >
                     </View>
-                    <View className="p-4 mb-6">
+                    <TouchableOpacity className="p-4 mb-6" onPress={() => router.push(`../userProfile/${producer?.id}`)}>
                         <Text className="text-title mt-6 text-start">
                             By: {producer?.name}
                         </Text>
-                    </View>
+                    </TouchableOpacity>
                     <Modal
                         visible={modalVisible}
                         transparent

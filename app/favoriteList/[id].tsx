@@ -62,7 +62,6 @@ export default function FavoriteList() {
     }
 
     async function deletePlayListFromId() {
-        console.log(playlist, 'can', canEdit)
         if (!playlist || !canEdit) return;
         Alert.alert("Apagar Playlist", `Deseja apagar "${playlist.name}"?`, [
             { text: "Cancelar", style: "cancel" },
@@ -115,12 +114,17 @@ export default function FavoriteList() {
                     <View className="flex-row justify-between items-center mb-6">
                         <View className="flex-1">
                             <Text className="text-2xl font-bold text-title">{playlist.name}</Text>
-                            {playlist && (
-                                <View className="flex-row items-center bg-blue-500/20 self-start px-2 py-1 rounded-full mt-1">
-                                    <Ionicons name="people" size={12} color="#60a5fa" />
-                                    <Text className="text-xs text-blue-400 font-bold ml-1">GRUPO</Text>
+                            {playlist.groupId ? (
+                                <View className="flex-row items-center bg-yellow-500/20 self-start px-2 py-1 rounded-full mt-1">
+                                    <Ionicons name="people" size={12} color={ColorUtils.TONES} />
+                                    <Text className="text-xs text-tone font-bold ml-1">GRUPO</Text>
                                 </View>
-                            )}
+                            ) :
+                                (<View className="flex-row items-center bg-blue-500/20 self-start px-2 py-1 rounded-full mt-1">
+                                    <Ionicons name="person" size={12} color={ColorUtils.SUB_TITLE} />
+                                    <Text className="text-xs text-subTitle font-bold ml-1">PESSOAL</Text>
+                                </View>)
+                            }
                         </View>
 
                         {canEdit && songs.length > 0 && (
@@ -134,13 +138,13 @@ export default function FavoriteList() {
                 )}
 
                 {songs.length === 0 && (
-                    <View className="flex-1 justify-center items-center mt-60">
+                    <View className="flex-1 justify-center items-center mt-5">
                         <Text className="text-4xl font-bold text-title text-center">
                             {`Playlist vazia.\nCadastrar músicas`}
                         </Text>
                         {canEdit ? (
                             <TouchableOpacity onPress={() => router.push('/songsList')}>
-                                <Text className="text-subTitle font-bold text-[1.5rem]">Biblioteca</Text>
+                                <Text className="text-subTitle font-bold text-[1.5rem] mt-4">Ir para Biblioteca</Text>
                             </TouchableOpacity>
                         ) : (
                             <Text className="text-gray-400 text-center mt-2">Apenas o dono do grupo pode editar esta playlist.</Text>
@@ -148,7 +152,7 @@ export default function FavoriteList() {
 
                         {canEdit && (
                             <TouchableOpacity
-                                className='mt-20 p-3 border-2 border-solid rounded'
+                                className='mt-8 p-3 border-2 border-solid rounded'
                                 onPress={deletePlayListFromId}
                             >
                                 <Text className="text-tone font-bold text-[1.5rem]">Apaga Playlist</Text>

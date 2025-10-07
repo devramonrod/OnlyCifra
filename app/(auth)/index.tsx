@@ -1,8 +1,7 @@
 import { StringUtils } from "@/libs/utils/StringUtils";
-import { auth } from "@/service/firebase";
+import { AuthService } from "@/service/auth-service";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
@@ -10,19 +9,22 @@ export default function Login() {
     const [email, setEmail] = useState<string>(StringUtils.EMPTY);
     const [password, setPassword] = useState<string>(StringUtils.EMPTY);
     const [error, setError] = useState<string>(StringUtils.EMPTY);
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
 
     async function handleLogin() {
+        setError(StringUtils.EMPTY);
+        setLoading(true);
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            if (userCredential.user.uid) {
-                router.replace(`./(tabs)`);
+            const user = await AuthService.login(email, password);
+            if (user) {
+                router.replace("./(tabs)");
             }
-
         } catch (err: any) {
-            setError("E-mail ou senha inválidos");
-            console.error(err);
+            setError(err.message || "Erro ao tentar logar");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -65,9 +67,13 @@ export default function Login() {
             <TouchableOpacity
                 onPress={handleLogin}
                 className="bg-blue-500 py-3 rounded-xl"
+                disabled={loading}
             >
-                <Text className="text-white text-center text-lg font-semibold">Entrar</Text>
+                <Text className="text-white text-center text-lg font-semibold">
+                    {loading ? "Entrando..." : "Entrar"}
+                </Text>
             </TouchableOpacity>
+
             <TouchableOpacity
                 onPress={() => router.push("/register")}
                 className="mt-8 items-center text-gray-500"
@@ -77,9 +83,11 @@ export default function Login() {
                     <Text className="text-tone font-bold">Cadastre-se</Text>
                 </View>
             </TouchableOpacity>
+
             <TouchableOpacity
                 onPress={() => router.push("/forgotPassWord")}
-                className="mt-10 items-center text-gray-500">
+                className="mt-10 items-center text-gray-500"
+            >
                 <Text className="text-default font-bold">Esqueci a senha</Text>
             </TouchableOpacity>
         </View>

@@ -1,6 +1,5 @@
 import { useDataStore } from '@/hooks/useData';
 import { Chord } from '@/libs/domain/Chord/Chord';
-import { PlayList } from '@/libs/domain/PlayList/PlayList';
 import { ColorUtils } from '@/libs/utils/ColorUtils';
 import { activeFilter, filterAndPaginate } from '@/libs/utils/filterEntities';
 import { formatTextIgnoreAccents } from '@/libs/utils/formatedText';
@@ -20,13 +19,12 @@ export default function SongsList() {
     const store = useDataStore();
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
-    const [playList, setPlayList] = useState<PlayList[]>([]);
     const [selectedSong, setSelectedSong] = useState<string>(StringUtils.EMPTY);
     const [searchTerm, setSearchTerm] = useState<string>(StringUtils.EMPTY);
     const [page, setPage] = useState<number>(0);
 
     const playlistsWithSong = selectedSong
-        ? playList.filter(it => it.songId?.includes(selectedSong))
+        ? store.playList.filter(it => it.songId?.includes(selectedSong))
         : [];
 
     const processedSongs = useMemo(() => {
@@ -55,7 +53,7 @@ export default function SongsList() {
     const entities = filterAndPaginate({ entity: activeEntities, page });
 
     const handleAddPlayList = useCallback(async (selectedPlaylists: string[], songId: string) => {
-        for (const list of playList) {
+        for (const list of store.playList) {
             const updatedSongs = list.songId ? [...list.songId] : [];
             const isSelected = selectedPlaylists.includes(list.id);
 
@@ -71,12 +69,12 @@ export default function SongsList() {
 
         setSelectedSong(StringUtils.EMPTY);
         setModalVisible(false);
-    }, [playList]);
+    }, [store.playList]);
 
     const openModalPlayList = useCallback(async (data: Chord) => {
         setSelectedSong(data.id);
         const list = await findUserPlaylists();
-        setPlayList(list);
+        store.setPlayList(list);
         setModalVisible(true);
     }, [])
 
@@ -125,7 +123,7 @@ export default function SongsList() {
                 <PlaylistRadiusModal
                     visible={modalVisible}
                     onClose={() => setModalVisible(false)}
-                    playList={playList}
+                    playList={store.playList}
                     preSelected={playlistsWithSong.map(pl => pl.id)}
                     onSubmit={(selectedPlaylists) => handleAddPlayList(selectedPlaylists, selectedSong)}
                 />

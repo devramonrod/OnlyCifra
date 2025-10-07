@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import FormDetailsModal from '@/components/formDetailsModal/formDetailsModal';
+import { useDataStore } from "@/hooks/useData";
 import { Group } from '@/libs/domain/Group/Group';
 import { IErrors } from '@/libs/domain/Interfaces/IError';
 import { PlayList } from '@/libs/domain/PlayList/PlayList';
@@ -16,8 +17,11 @@ import { findMyGroupWithMembers } from '@/service/GroupService';
 import { createGroupPlaylistOnClient, createPlayList, findUserPlaylists } from '@/service/PlayListService';
 
 export default function PlayListTeam() {
+
+    const store = useDataStore();
+
     const [form, setForm] = useState<PlayList>(new PlayList());
-    const [data, setData] = useState<PlayList[]>([]);
+    // const [data, setData] = useState<PlayList[]>([]);
     const [errors, setErrors] = useState<IErrors>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -42,16 +46,17 @@ export default function PlayListTeam() {
         setErrors({});
 
         try {
-            // 2. Lógica específica baseada no tipo do modal
             if (modalType === PlaylistType.GROUP) {
                 if (!group) throw new Error("Grupo não encontrado para criar a playlist.");
                 await createGroupPlaylistOnClient(group.id, sanitizedName);
-            } else { // 'PERSONAL'
+
+            } else {
                 const newPlaylist = PlayList.fromJson({
                     ...form,
                     name: sanitizedName,
                     type: PlaylistType.PERSONAL,
                 });
+
                 await createPlayList(newPlaylist);
                 setIsSubmitting(true)
             }
@@ -75,7 +80,7 @@ export default function PlayListTeam() {
                 findMyGroupWithMembers()
             ]);
 
-            setData(playLists);
+            store.setPlayList(playLists);
 
             if (groupResult) {
                 setGroup(groupResult.group);
@@ -92,7 +97,8 @@ export default function PlayListTeam() {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, []
+    )
 
     if (loading) {
         return <ActivityIndicator size="large" className="flex-1 bg-background" />;
@@ -101,13 +107,25 @@ export default function PlayListTeam() {
     return (
         <ScrollView className="flex-1 bg-background p-6">
             <View className="flex-row justify-between mb-1 space-x-2">
-                <TouchableOpacity onPress={() => { setModalType(PlaylistType.PERSONAL); setModalVisible(true); }} className="bg-bg p-4 w-[45%] rounded-lg flex-row items-center">
+                <TouchableOpacity
+                    onPress={() => {
+                        setModalType(PlaylistType.PERSONAL);
+                        setModalVisible(true);
+                    }}
+                    className="bg-bg p-4 w-[45%] rounded-lg flex-row items-center justify-center"
+                >
                     <Ionicons name="add" size={18} color="white" />
                     <Text className="text-white text-[.8rem] font-bold ml-1">Nova Pessoal</Text>
                 </TouchableOpacity>
 
                 {isUserAdmin && (
-                    <TouchableOpacity onPress={() => { setModalType(PlaylistType.GROUP); setModalVisible(true); }} className="bg-tone p-4 w-[45%] rounded-lg flex-row items-center">
+                    <TouchableOpacity
+                        onPress={() => {
+                            setModalType(PlaylistType.GROUP);
+                            setModalVisible(true);
+                        }}
+                        className="bg-tone p-4 w-[45%] rounded-lg flex-row items-center justify-center"
+                    >
                         <Ionicons name="people" size={18} color="white" />
                         <Text className="text-white text-[.8rem] font-bold ml-1">Nova do Grupo</Text>
                     </TouchableOpacity>
@@ -123,7 +141,7 @@ export default function PlayListTeam() {
                 isLoading={isSubmitting}            >
                 <TextInput
                     placeholder="Título da Playlist"
-                    className="mb-4 w-full border border-gray-300 p-4 rounded-xl text-[1.375rem] bg-secondary text-primary"
+                    className="bg-gray-800 text-secondary p-4 rounded-xl mb-4 text-lg w-full mt-6"
                     value={form.name}
                     onChangeText={(it) => handleChange('name', it)}
                 />
@@ -131,7 +149,7 @@ export default function PlayListTeam() {
             </FormDetailsModal>
 
             <View className="flex-col gap-4">
-                {data.map((it) => (
+                {store.playList.map((it) => (
                     <Link
                         href={{
                             pathname: "/favoriteList/[id]",
@@ -148,7 +166,7 @@ export default function PlayListTeam() {
                             </View>
                             <View className="flex-row items-center gap-4">
                                 {it.type === 'GROUP' && (
-                                    <View className="flex-row items-center bg-blue-500/20 self-start px-2 py-1 rounded-full mt-1">
+                                    <View className="flex-row items-center bg-yellow-500/20 self-start px-2 py-1 rounded-full mt-1">
                                         <Ionicons name="people" size={12} color={ColorUtils.TONES} />
                                         <Text className="text-xs text-tone font-bold ml-1">GRUPO</Text>
                                     </View>

@@ -34,12 +34,12 @@ export default function ConfirmationModal({
                 <View className="flex-1 bg-black/40" />
             </TouchableWithoutFeedback>
 
-            <View className="absolute top-1/3 left-6 right-6 bg-white rounded-lg p-6 shadow-lg">
-                <Text className="text-[1.75rem] font-bold text-primary mb-2">
+            <View className="absolute top-20 left-0 right-0 bg-bgSecondary rounded-lg justify-center items-center p-6" >
+                <Text className="text-3xl font-bold text-secondary">
                     {title}
                 </Text>
                 {message && (
-                    <Text className="text-base text-gray-700 mb-4">
+                    <Text className="text-secondary text-gray-700 mt-2 mb-4">
                         {message}
                     </Text>
                 )}
@@ -47,16 +47,16 @@ export default function ConfirmationModal({
                 <View className="flex-row justify-center gap-4">
                     <TouchableOpacity
                         onPress={onCancel}
-                        className="px-4 py-2 bg-gray-300 rounded-lg shadow-md"
+                        className="bg-default p-4 rounded-xl items-center justify-center mt-8"
                     >
-                        <Text className="text-black font-bold">Cancelar</Text>
+                        <Text className="text-secondary font-bold text-lg">Cancelar</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         onPress={onConfirm}
-                        className="px-4 py-2 bg-tone shadow-md rounded-lg"
+                        className="bg-third p-4 rounded-xl items-center justify-center mt-8"
                     >
-                        <Text className="text-white font-bold">Confirmar</Text>
+                        <Text className="text-secondary font-bold text-lg">Confirmar</Text>
                     </TouchableOpacity>
                 </View>
             </View>

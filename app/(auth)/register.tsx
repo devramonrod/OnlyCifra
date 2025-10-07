@@ -1,4 +1,4 @@
-import { formatDateBR } from "@/libs/utils/formatDateBr";
+import { convertBRDateToISO, formatDateBR, isValidBRDate } from "@/libs/utils/formatDateBr";
 import { StringUtils } from "@/libs/utils/StringUtils";
 import { registerService, UserRegistrationData } from "@/service/RegisterService";
 import { emailExists } from "@/service/UserService";
@@ -6,7 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView, Platform,
     ScrollView,
     Text,
     TextInput, TouchableOpacity, View
@@ -32,15 +34,45 @@ export default function RegisterScreen() {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    async function handleRegister() {
-        const { password, confirmPassword, ...profileData } = formData;
-
-        if (Object.values(formData).some(v => v === StringUtils.EMPTY)) {
-            Alert.alert("Atenção", "Por favor, preencha todos os campos.");
-            return;
+    function validateForm(data: typeof formData): string | null {
+        if (Object.values(data).some(v => v === StringUtils.EMPTY)) {
+            return "Por favor, preencha todos os campos.";
         }
-        if (password !== confirmPassword) {
-            Alert.alert("Erro", "As senhas não coincidem.");
+
+        if (!isValidBRDate(data.birthdate)) {
+            return "A data de nascimento deve estar no formato DD/MM/AAAA.";
+        }
+
+        if (data.password !== data.confirmPassword) {
+            return "As senhas não coincidem.";
+        }
+
+        return null;
+    }
+
+    function buildUserData(data: typeof formData): UserRegistrationData {
+        const { password, confirmPassword, ...profileData } = data;
+
+        return {
+            ...profileData,
+            password,
+            birthdate: convertBRDateToISO(data.birthdate),
+        };
+    }
+
+    async function checkEmailExists(email: string): Promise<boolean> {
+        const formattedEmail = email.trim().toLowerCase();
+        return await emailExists(formattedEmail);
+    }
+
+    async function registerUser(data: UserRegistrationData): Promise<void> {
+        return await registerService(data);
+    }
+
+    async function handleRegister() {
+        const validationError = validateForm(formData);
+        if (validationError) {
+            Alert.alert("Atenção", validationError);
             return;
         }
 
@@ -48,15 +80,14 @@ export default function RegisterScreen() {
         setEmailError(StringUtils.EMPTY);
 
         try {
-            const exists = await emailExists(formData.email.trim().toLowerCase());
+            const exists = await checkEmailExists(formData.email);
             if (exists) {
                 setEmailError("Este e-mail já está cadastrado.");
-                setIsLoading(false);
                 return;
             }
 
-            const userData: UserRegistrationData = { password, ...profileData };
-            await registerService(userData);
+            const userData = buildUserData(formData);
+            await registerUser(userData);
 
             Alert.alert("Sucesso!", "Sua conta foi criada. Faça o login para continuar.");
             router.replace("/");
@@ -119,7 +150,8 @@ export default function RegisterScreen() {
                             placeholder="Data de Nascimento - DD/MM/AAAA"
                             value={formData.birthdate}
                             onChangeText={(text) => {
-                                handleInputChange("birthdate", formatDateBR(text));
+                                const formatted = formatDateBR(text);
+                                handleInputChange("birthdate", formatted);
                             }}
                             maxLength={10}
                             keyboardType="numeric"

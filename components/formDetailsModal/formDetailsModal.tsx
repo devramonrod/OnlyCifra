@@ -49,9 +49,9 @@ export default function FormDetailsModal({
                     <View className="flex-1 bg-black/40" />
                 </TouchableWithoutFeedback>
 
-                <View className="absolute top-20 left-0 right-0 bg-white rounded-lg justify-center items-center p-4" >
+                <View className="absolute top-20 left-0 right-0 bg-bgSecondary rounded-lg justify-center items-center p-6" >
                     {title && (
-                        <Text className="text-[2rem] text-primary mb-3">
+                        <Text className="text-3xl font-bold text-secondary">
                             {title}
                         </Text>
                     )}
@@ -61,11 +61,12 @@ export default function FormDetailsModal({
                     <TouchableOpacity
                         disabled={isLoading}
                         onPress={() => submit(onClose)}
-                        className="bg-tone w-full h-16 mt-[2rem] rounded-lg justify-center items-center shadow-md">
+                        className="bg-third p-4 rounded-xl items-center justify-center mt-8 w-full"
+                    >
                         {isLoading ? (
                             <ActivityIndicator color={ColorUtils.SECONDARY} />
                         ) : (
-                            <Text className="text-title font-bold text-2xl">
+                            <Text className="text-secondary font-bold text-lg">
                                 Salvar
                             </Text>
                         )}

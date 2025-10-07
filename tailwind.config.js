@@ -10,9 +10,10 @@ module.exports = {
       colors: {
         primary: "#000000",
         secondary: "#ffffff",
-        third: '#4ade80"',
+        third: "#4ade80",
         title: "#ffffff",
         bg: "#5693dcff",
+        bgSecondary: "#111827",
         subTitle: "#60a5fa",
         name: "#ffff00",
         notes: "#20f535",

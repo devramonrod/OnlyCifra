@@ -118,7 +118,7 @@ export default function GroupScreen() {
                     <View>
                         {members.map((it, index) => (
                             <View key={index} className="flex-row items-center bg-gray-800 p-3 rounded-lg mb-2">
-                                <Ionicons name="person-circle-outline" size={28} color="#9ca3af" className="mr-3" />
+                                <Ionicons name="person-circle-outline" size={28} color={ColorUtils.DEFAULT} className="mr-3" />
                                 <Text className="text-base text-gray-200 font-medium">{it.name}</Text>
                             </View>
                         ))}
@@ -127,25 +127,50 @@ export default function GroupScreen() {
                 </ScrollView>
             ) : (
 
-                <View className="flex-1 justify-center items-center space-y-5">
-                    <Text className="text-xl text-gray-400 text-center">Você ainda não faz parte de um grupo.</Text>
+                <View className="flex-1 justify-center items-center gap-6">
+                    <Text className="text-xl text-default text-center">Você ainda não faz parte de um grupo.</Text>
 
-                    <TouchableOpacity onPress={() => setCreateModalVisible(true)} className="bg-blue-600 py-3 px-6 rounded-lg shadow-lg w-full items-center">
+                    <TouchableOpacity onPress={() => setCreateModalVisible(true)} className="bg-bg p-4 w-full rounded-lg flex-row items-center justify-center">
                         <Text className="text-white text-lg font-bold">Criar Meu Grupo</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => setJoinModalVisible(true)} className="bg-gray-700 py-3 px-6 rounded-lg w-full items-center">
+                    <TouchableOpacity onPress={() => setJoinModalVisible(true)} className="bg-default p-4 w-full rounded-lg flex-row items-center justify-center">
                         <Text className="text-white text-lg font-bold">Entrar com Código</Text>
                     </TouchableOpacity>
                 </View>
             )}
 
-            <FormDetailsModal visible={createModalVisible} title="Criar Novo Grupo" onClose={() => setCreateModalVisible(false)} submit={handleCreate} onOpen={() => setJoinModalVisible(true)}>
-                <TextInput placeholder="Nome da banda ou ministério" value={groupName} onChangeText={setGroupName} className="border border-gray-600 bg-gray-800 text-white p-4 rounded-xl text-lg w-full" placeholderTextColor="#9ca3af" />
+            <FormDetailsModal
+                visible={createModalVisible}
+                title="Criar Novo Grupo"
+                onClose={() => setCreateModalVisible(false)}
+                submit={handleCreate}
+                onOpen={() => setJoinModalVisible(true)}
+            >
+                <TextInput
+                    placeholder="Nome da banda ou ministério"
+                    placeholderTextColor={ColorUtils.DEFAULT}
+                    value={groupName} onChangeText={setGroupName}
+                    className="bg-gray-800 text-secondary p-4 rounded-xl mb-4 text-lg w-full mt-6"
+                />
+
             </FormDetailsModal>
 
-            <FormDetailsModal visible={joinModalVisible} title="Entrar em um Grupo" onClose={() => setJoinModalVisible(false)} submit={handleJoin} onOpen={() => setJoinModalVisible(true)}>
-                <TextInput placeholder="Código de Convite" value={inviteCodeInput} onChangeText={setInviteCodeInput} autoCapitalize="characters" maxLength={6} className="border border-gray-600 bg-gray-800 text-white p-4 rounded-xl text-lg w-full text-center tracking-[.25em]" placeholderTextColor="#9ca3af" />
+            <FormDetailsModal
+                visible={joinModalVisible}
+                title="Entrar em um Grupo"
+                onClose={() => setJoinModalVisible(false)}
+                submit={handleJoin}
+                onOpen={() => setJoinModalVisible(true)}
+            >
+                <TextInput
+                    placeholder="Código de Convite"
+                    value={inviteCodeInput}
+                    onChangeText={setInviteCodeInput}
+                    autoCapitalize="characters"
+                    maxLength={6}
+                    className="bg-gray-800 text-secondary p-4 rounded-xl mb-4 text-lg w-full mt-6"
+                    placeholderTextColor={ColorUtils.DEFAULT} />
             </FormDetailsModal>
         </View>
     );
