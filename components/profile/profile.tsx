@@ -9,6 +9,7 @@ import { findGroupsById } from '@/service/GroupService';
 import { findPlansById } from '@/service/PlanService';
 import { findUserById, updateUser } from '@/service/UserService';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import InfoRow from '../infoRow/infoRow';
@@ -24,8 +25,13 @@ export default function Profile({ userId }: Props) {
     const [plan, setPlan] = useState<Plan>();
     const [editModalVisible, setEditModalVisible] = useState(false);
     const [editUser, setEditUser] = useState<User>();
+    const [isUserProfile, setIsUserProfile] = useState(false);
 
-    const effectiveUserId = userId ?? user?.uid;
+    const effectiveUserId = userId == user?.uid;
+
+    const instagram = data?.instagram
+        ? data.instagram.split("@").at(1)
+        : StringUtils.EMPTY;
 
     function handleChange(field: keyof User, value: string) {
         setEditUser(prev => {
@@ -33,6 +39,11 @@ export default function Profile({ userId }: Props) {
             return User.fromJson(data);
         });
     };
+
+    function isCurrentUserProfile(): boolean {
+        if (!userId && user?.uid) return true;
+        return userId === user?.uid;
+    }
 
     async function handleSubmit() {
         if (effectiveUserId && editUser) {
@@ -43,50 +54,58 @@ export default function Profile({ userId }: Props) {
                 instagram: editUser.instagram,
             };
 
-            await updateUser(effectiveUserId, updateData);
+            await updateUser(String(user?.uid), updateData);
             setData(editUser);
             setEditModalVisible(false);
         }
     }
 
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            if (effectiveUserId) {
-                try {
-                    const userData = await findUserById(effectiveUserId);
-                    if (userData) {
-                        setData(userData);
+    async function fetchProfileData(id: string) {
+        if (id) {
+            try {
+                const userData = await findUserById(id);
+                if (userData) {
+                    setData(userData);
 
-                        const groupId = Array.isArray(userData.memberOfGroups) && userData.memberOfGroups.length > 0
-                            ? userData.memberOfGroups[0]
-                            : undefined;
+                    const groupId = Array.isArray(userData.memberOfGroups) && userData.memberOfGroups.length > 0
+                        ? userData.memberOfGroups[0]
+                        : undefined;
 
-                        const groupPromise = groupId
-                            ? findGroupsById(groupId)
-                            : Promise.resolve(undefined);
+                    const groupPromise = groupId
+                        ? findGroupsById(groupId)
+                        : Promise.resolve(undefined);
 
-                        const planPromise = userData.activePlan
-                            ? findPlansById(userData.activePlan)
-                            : Promise.resolve(undefined);
+                    const planPromise = userData.activePlan
+                        ? findPlansById(userData.activePlan)
+                        : Promise.resolve(undefined);
 
-                        const [groupData, planData] = await Promise.all([groupPromise, planPromise]);
+                    const [groupData, planData] = await Promise.all([groupPromise, planPromise]);
 
-                        if (groupData) setGroup(groupData);
-                        if (planData) setPlan(planData);
-                    }
-                } catch (error) {
-                    console.error("Erro ao buscar dados do perfil:", error);
+                    if (groupData) setGroup(groupData);
+                    if (planData) setPlan(planData);
                 }
-            } else {
-                setData(undefined);
-                setGroup(undefined);
-                setPlan(undefined);
+            } catch (error) {
+                console.error("Erro ao buscar dados do perfil:", error);
             }
-        };
+        } else {
+            setData(undefined);
+            setGroup(undefined);
+            setPlan(undefined);
+        }
+    };
 
-        fetchProfileData();
+    useEffect(() => {
+        if (userId) {
+            fetchProfileData(userId);
+        } else {
+            fetchProfileData(String(user?.uid));
+        }
+
     }, [effectiveUserId]);
 
+    useEffect(() => {
+        setIsUserProfile(isCurrentUserProfile());
+    }, [userId, user]);
 
     return (
         <ScrollView className="flex-1 bg-bgSecondary">
@@ -114,11 +133,14 @@ export default function Profile({ userId }: Props) {
 
                 <View className="bg-gray-800 rounded-xl overflow-hidden">
                     <InfoRow icon={<Ionicons name="call-outline" size={24} color={ColorUtils.DEFAULT} />} label="Telefone" value={data?.phone} />
-                    <InfoRow
-                        icon={<Ionicons name="logo-instagram" size={24} color={ColorUtils.DEFAULT} />}
-                        label="Instagram"
-                        value={data?.instagram}
-                    />
+
+                    <Link href={`https://www.instagram.com/${instagram}`} >
+                        <InfoRow
+                            icon={<Ionicons name="logo-instagram" size={24} color={ColorUtils.DEFAULT} />}
+                            label="Instagram"
+                            value={data?.instagram}
+                        />
+                    </Link>
                     <InfoRow
                         icon={<Ionicons name="calendar-outline" size={24} color={ColorUtils.DEFAULT} />}
                         label="Data de Nascimento"
@@ -134,15 +156,18 @@ export default function Profile({ userId }: Props) {
                     />
                 </View>
 
-                <TouchableOpacity
-                    className="bg-third p-4 rounded-xl items-center justify-center mt-8 mb-12"
-                    onPress={() => {
-                        setEditUser(data);
-                        setEditModalVisible(true);
-                    }}
-                >
-                    <Text className="text-secondary font-bold text-lg">Editar Perfil</Text>
-                </TouchableOpacity>
+                {isUserProfile && (
+                    <TouchableOpacity
+                        className="bg-third p-4 rounded-xl items-center justify-center mt-8 mb-12"
+                        onPress={() => {
+                            setEditUser(data);
+                            setEditModalVisible(true);
+                        }}
+                    >
+                        <Text className="text-secondary font-bold text-lg">Editar Perfil</Text>
+                    </TouchableOpacity>
+                )}
+
             </View>
 
             <Modal visible={editModalVisible} transparent animationType="slide">

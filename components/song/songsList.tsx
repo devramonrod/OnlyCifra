@@ -9,18 +9,16 @@ import { findUserPlaylists, updatePlayList } from '@/service/PlayListService';
 import { Link } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Text, TouchableOpacity, View } from 'react-native';
-import { TextInput } from 'react-native-paper';
 import CustomButton from '../customButton/customButton';
 import Loading from '../loading/loadgin';
 import PaginedButton from '../paginedButton/paginedButton';
 import PlaylistRadiusModal from '../playlistRadiusModal/playlistRadiusModal';
 
-export default function SongsList() {
+export default function SongsList({ searchTerm }: { searchTerm: string }) {
     const store = useDataStore();
     const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedSong, setSelectedSong] = useState<string>(StringUtils.EMPTY);
-    const [searchTerm, setSearchTerm] = useState<string>(StringUtils.EMPTY);
     const [page, setPage] = useState<number>(0);
 
     const playlistsWithSong = selectedSong
@@ -96,16 +94,6 @@ export default function SongsList() {
 
     return (
         <View>
-            <View>
-                <TextInput
-                    placeholder="Buscar cifra"
-                    mode="outlined"
-                    className="mb-2"
-                    contentStyle={{ fontSize: 22 }}
-                    value={searchTerm}
-                    onChangeText={setSearchTerm}
-                />
-            </View>
             {entities?.map((it, index) => (
                 <TouchableOpacity key={index} className=' p-2 mb-2 rounded-md flex-row justify-between items-center'>
                     <Link className='flex-1' href={`/chord/${it.id}`}>

@@ -1,3 +1,4 @@
+import { useAuth } from '@/context/AuthContext';
 import { Chord } from '@/libs/domain/Chord/Chord';
 import { User } from '@/libs/domain/users/member/User';
 import { Tones } from '@/libs/enuns/Tones';
@@ -19,15 +20,24 @@ type Props = {
 export default function ChordData({ chord }: Props) {
 
     const router = useRouter();
+
+    const { user } = useAuth();
+
     const [selectedTone, setSelectedTone] = useState<Tones | string>(chord?.tone || StringUtils.EMPTY);
     const [modalToneVisible, setModalToneVisible] = useState<boolean>(false);
     const [modalDescriptionVisible, setModalDescriptionVisible] = useState<boolean>(false);
 
     const [producer, setProducer] = useState<User>();
+    const [userData, setUserData] = useState<User>();
+
     const [liked, setLiked] = useState<boolean>(false);
     const [likesCount, setLikesCount] = useState<number>(chord?.likesCount ?? 0);
 
     const isLikes = likesCount === 1 || likesCount === 0 ? 'Like' : 'Likes';
+
+    const isProducer = chord?.userId == user?.uid;
+    const isGroup = producer?.memberOfGroups == userData?.memberOfGroups;
+    const isProducerOrMemberGroup = isProducer || isGroup;
 
     const editChord = useCallback(async (chordId: string) => {
         router.push({
@@ -62,8 +72,12 @@ export default function ChordData({ chord }: Props) {
 
     async function loadUserProducer() {
         const user = await findUserById(String(chord?.userId));
-
         if (user) setProducer(user);
+    }
+
+    async function loadUser() {
+        const data = await findUserById(String(user?.uid));
+        if (data) setUserData(data)
     }
 
     async function handleLike() {
@@ -87,6 +101,7 @@ export default function ChordData({ chord }: Props) {
             setSelectedTone(chord.tone);
             setLikesCount(chord.likesCount ?? 0);
             loadUserProducer();
+            loadUser();
         }
     }, [chord]);
 
@@ -112,7 +127,12 @@ export default function ChordData({ chord }: Props) {
                                 <Text className='text-[2rem] text-title font-bold text-center flex-1'>
                                     {chord.title}
                                 </Text>
-                                <CustomButton handle={() => editChord(chord.id)} color={ColorUtils.DEFAULT} icon='note-edit' />
+                                <CustomButton
+                                    handle={() => editChord(chord.id)}
+                                    color={ColorUtils.DEFAULT}
+                                    icon='note-edit'
+                                    isActive={isProducerOrMemberGroup}
+                                />
                             </View>
 
                             <View className='p-4'>
@@ -146,7 +166,7 @@ export default function ChordData({ chord }: Props) {
                                                         <View key={idx} className="w-full h-0" />
                                                     ) : (
                                                         <Text key={idx} className='text-[1.8rem] text-notes font-semibold'>
-                                                            {c.value}{' '}
+                                                            {String(c.value || '') + ' '}
                                                         </Text>
                                                     )
                                                 ))}
@@ -156,7 +176,7 @@ export default function ChordData({ chord }: Props) {
                                 </View>
                             </View >
                         </View>
-                        {chord.description && (
+                        {chord.description && isProducerOrMemberGroup && (
                             <TouchableOpacity
                                 className="p-4"
                                 onPress={() => {
