@@ -3,35 +3,16 @@ import { getAuth } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth/web-extension";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
-// const extra = Constants.expoConfig?.extra ?? {};
 
 export const firebaseConfig = {
-    //     apiKey: extra.firebaseApiKey,
-    //     authDomain: extra.firebaseAuthDomain,
-    //     databaseURL: extra.firebaseDatabaseUrl,
-    //     projectId: extra.firebaseProjectId,
-    //     storageBucket: extra.firebaseStorageBucket,
-    //     messagingSenderId: extra.firebaseMessagingSenderId,
-    //     appId: extra.firebaseAppId,
-    //     measurementId: extra.firebaseMeasurementId,
-
-
-    // apiKey: "AIzaSyCfqJy9CeRG0u-4TKx6QGDFomYcyjmfQpA",
-    // authDomain: "cifra-3739d.firebaseapp.com",
-    // projectId: "cifra-3739d",
-    // storageBucket: "cifra-3739d.firebasestorage.app",
-    // messagingSenderId: "588504489368", 
-    // appId: "1:588504489368:web:88d4c5760335dc788bdfed",
-    // measurementId: "G-VW4NHMQB78"
-
-    apiKey: "AIzaSyAuc83rxO046rMx-lrZOKNhkUtCT88hc9Y",
-    authDomain: "gsusplay-6629f.firebaseapp.com",
-    projectId: "gsusplay-6629f",
-    storageBucket: "gsusplay-6629f.firebasestorage.app",
-    messagingSenderId: "825616260124",
-    appId: "1:825616260124:web:db9c37805d719c798353d9",
-    measurementId: "G-78BJDP6HE4"
-
+    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL,
+    projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -46,7 +27,6 @@ if (__DEV__) {
 }
 
 // initializeAppCheck(app, {
-
-//     provider: new ReCaptchaV3Provider("6LcwHdIrAAAAALJotCOghTRikGpbVXCGmx-KmS-B"),
+//     provider: new ReCaptchaV3Provider(process.env.EXPO_PUBLIC_RECAPTCHA_SITE_KEY || ""),
 //     isTokenAutoRefreshEnabled: true
 // });
