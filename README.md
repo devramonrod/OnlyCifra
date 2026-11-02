@@ -1,10 +1,10 @@
-# 🎵 OnlyCifra (GsusPlay)
+# OnlyCifra (GsusPlay)
 
 > Aplicativo mobile completo para músicos, ministérios de louvor e bandas. Gerenciamento e transposição de cifras em tempo real, organização de repertórios/playlists, gestão de equipes e sincronização em nuvem.
 
 ---
 
-## 📌 Visão Geral
+## Visão Geral
 
 O **OnlyCifra** (também identificado como **GsusPlay**) foi desenvolvido para solucionar as dores de músicos e líderes de bandas/ministérios de louvor no palco e nos ensaios. 
 
@@ -17,7 +17,7 @@ Com ele, o músico pode:
 
 ---
 
-## 🚀 Tecnologias e Bibliotecas
+## Tecnologias e Bibliotecas
 
 | Categoria | Tecnologia | Finalidade |
 | :--- | :--- | :--- |
@@ -33,7 +33,7 @@ Com ele, o músico pode:
 
 ---
 
-## 📁 Arquitetura do Projeto
+## Arquitetura do Projeto
 
 O projeto segue padrões de **Domain-Driven Design (DDD)** e arquitetura em camadas, separando regras de domínio, serviços de infraestrutura e interfaces de usuário.
 
@@ -126,7 +126,7 @@ OnlyCifra/
 
 ---
 
-## ⚙️ Configuração e Instalação
+## Configuração e Instalação
 
 ### 1. Pré-requisitos
 - [Node.js](https://nodejs.org/) (versão 20 LTS ou 22 recomendada)
@@ -193,7 +193,7 @@ npm run serve
 
 ---
 
-## 🔒 Segurança e Boas Práticas
+## Segurança e Boas Práticas
 
 - **Zero Chaves Hardcoded:** Todas as credenciais de Firebase, tokens de ReCaptcha e URLs dinâmicas são carregadas via variáveis protegidas `EXPO_PUBLIC_*`.
 - **Git Ignore Blindado:** Arquivos `.env`, `.firebaserc`, pastas nativas geradas (`android/`, `ios/`), keystores e arquivos de debug do Firebase estão estritamente ignorados no [.gitignore](file:///F:/TECHNOSOU/App%20Mobiles/OnlyCifra/.gitignore).
@@ -201,6 +201,6 @@ npm run serve
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto é de uso privado. Todos os direitos reservados à equipe de desenvolvimento.
